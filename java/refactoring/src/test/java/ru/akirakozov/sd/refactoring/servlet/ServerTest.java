@@ -2,16 +2,14 @@ package ru.akirakozov.sd.refactoring.servlet;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.akirakozov.sd.refactoring.database.ProductsDatabase;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -30,27 +28,6 @@ class ServerTest {
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
     }
 
-    private void createNewTable() throws SQLException {
-        try (Connection c = DriverManager.getConnection("jdbc:sqlite:test.db")) {
-            String sql = "DROP TABLE IF EXISTS PRODUCT";
-            Statement stmt = c.createStatement();
-
-            stmt.executeUpdate(sql);
-            stmt.close();
-        }
-
-        try (Connection c = DriverManager.getConnection("jdbc:sqlite:test.db")) {
-            String sql = "CREATE TABLE PRODUCT" +
-                    "(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
-                    " NAME           TEXT    NOT NULL, " +
-                    " PRICE          INT     NOT NULL)";
-            Statement stmt = c.createStatement();
-
-            stmt.executeUpdate(sql);
-            stmt.close();
-        }
-    }
-
     private void addProduct(String name, long price) throws IOException {
         when(request.getParameter("name")).thenReturn(name);
         when(request.getParameter("price")).thenReturn(String.valueOf(price));
@@ -63,7 +40,7 @@ class ServerTest {
     }
 
     void fillTheTable() throws SQLException, IOException {
-        createNewTable();
+        ProductsDatabase.createNewTable();
         addProduct("iphone6", 300);
         addProduct("iphone7", 500);
         addProduct("iphone8", 400);
@@ -71,7 +48,7 @@ class ServerTest {
 
     @Test
     void addShouldWork() throws SQLException, IOException {
-        createNewTable();
+        ProductsDatabase.createNewTable();
         addProduct("iphone6", 300);
         assertEquals("OK\n", writer.toString());
     }
