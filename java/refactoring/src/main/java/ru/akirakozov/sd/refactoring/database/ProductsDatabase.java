@@ -24,6 +24,23 @@ public class ProductsDatabase {
         createTableIfNotExists();
     }
 
+    public static void addProduct(String name, long price) {
+        ProductsDatabase.updateTable("INSERT INTO PRODUCT " +
+                "(NAME, PRICE) VALUES (\"" + name + "\"," + price + ")");
+    }
+
+    private static void updateTable(String sql) {
+        try {
+            try (Connection c = DriverManager.getConnection(URL)) {
+                Statement stmt = c.createStatement();
+                stmt.executeUpdate(sql);
+                stmt.close();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static void replaceTable(String sql) throws SQLException {
         try (Connection c = DriverManager.getConnection(URL)) {
             Statement stmt = c.createStatement();
