@@ -4,6 +4,7 @@ import ru.akirakozov.sd.refactoring.HTML.HTMLProductsWriter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
 import java.sql.*;
 
 public class ProductsDatabase {
@@ -30,9 +31,9 @@ public class ProductsDatabase {
                 "(NAME, PRICE) VALUES (\"" + name + "\"," + price + ")");
     }
 
-    public static void getProducts(HttpServletRequest request, HttpServletResponse response) {
+    public static void getProducts(PrintWriter printWriter) {
         try {
-            HTMLProductsWriter writer = new HTMLProductsWriter(response.getWriter());
+            HTMLProductsWriter writer = new HTMLProductsWriter(printWriter);
             try (Connection c = DriverManager.getConnection(URL)) {
                 Statement stmt = c.createStatement();
                 ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCT");
