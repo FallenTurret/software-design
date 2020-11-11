@@ -1,5 +1,7 @@
 package ru.akirakozov.sd.refactoring.database;
 
+import ru.akirakozov.sd.refactoring.HTML.HTMLProductsWriter;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.*;
@@ -30,17 +32,18 @@ public class ProductsDatabase {
 
     public static void getProducts(HttpServletRequest request, HttpServletResponse response) {
         try {
+            HTMLProductsWriter writer = new HTMLProductsWriter(response.getWriter());
             try (Connection c = DriverManager.getConnection(URL)) {
                 Statement stmt = c.createStatement();
                 ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCT");
-                response.getWriter().println("<html><body>");
+                writer.beginPage();
 
                 while (rs.next()) {
                     String name = rs.getString("name");
-                    int price  = rs.getInt("price");
-                    response.getWriter().println(name + "\t" + price + "</br>");
+                    long price = rs.getInt("price");
+                    writer.writeProduct(name, price);
                 }
-                response.getWriter().println("</body></html>");
+                writer.endPage();
 
                 rs.close();
                 stmt.close();
