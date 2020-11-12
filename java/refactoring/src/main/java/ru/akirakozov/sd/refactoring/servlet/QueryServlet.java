@@ -24,27 +24,7 @@ public class QueryServlet extends HttpServlet {
         if ("max".equals(command)) {
             ProductsDatabase.getMaxProduct(writer);
         } else if ("min".equals(command)) {
-            try {
-                try (Connection c = DriverManager.getConnection("jdbc:sqlite:test.db")) {
-                    Statement stmt = c.createStatement();
-                    ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCT ORDER BY PRICE LIMIT 1");
-                    response.getWriter().println("<html><body>");
-                    response.getWriter().println("<h1>Product with min price: </h1>");
-
-                    while (rs.next()) {
-                        String  name = rs.getString("name");
-                        int price  = rs.getInt("price");
-                        response.getWriter().println(name + "\t" + price + "</br>");
-                    }
-                    response.getWriter().println("</body></html>");
-
-                    rs.close();
-                    stmt.close();
-                }
-
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            ProductsDatabase.getMinProduct(writer);
         } else if ("sum".equals(command)) {
             try {
                 try (Connection c = DriverManager.getConnection("jdbc:sqlite:test.db")) {

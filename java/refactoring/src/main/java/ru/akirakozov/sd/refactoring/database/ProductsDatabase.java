@@ -39,6 +39,12 @@ public class ProductsDatabase {
                 "Product with max price");
     }
 
+    public static void getMinProduct(PrintWriter printWriter) {
+        getQueryResults(printWriter,
+                "SELECT * FROM PRODUCT ORDER BY PRICE LIMIT 1",
+                "Product with min price");
+    }
+
     private static void getQueryResults(PrintWriter printWriter, String sql, String heading) {
         try {
             HTMLProductsWriter writer = new HTMLProductsWriter(printWriter);
