@@ -30,7 +30,7 @@ public class QueryServlet extends HttpServlet {
         } else if ("count".equals(command)) {
             ProductsDatabase.getCount(writer);
         } else {
-            response.getWriter().println("Unknown command: " + command);
+            writer.println("Unknown command: " + command);
         }
 
         response.setContentType("text/html");
