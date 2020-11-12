@@ -2,8 +2,6 @@ package ru.akirakozov.sd.refactoring.database;
 
 import ru.akirakozov.sd.refactoring.HTML.HTMLProductsWriter;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.sql.*;
 
@@ -41,7 +39,32 @@ public class ProductsDatabase {
 
                 while (rs.next()) {
                     String name = rs.getString("name");
-                    long price = rs.getInt("price");
+                    int price = rs.getInt("price");
+                    writer.writeProduct(name, price);
+                }
+                writer.endPage();
+
+                rs.close();
+                stmt.close();
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void getMaxProduct(PrintWriter printWriter) {
+        try {
+            HTMLProductsWriter writer = new HTMLProductsWriter(printWriter);
+            try (Connection c = DriverManager.getConnection(URL)) {
+                Statement stmt = c.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCT ORDER BY PRICE DESC LIMIT 1");
+                writer.beginPage();
+                writer.writeHeading("Product with max price");
+
+                while (rs.next()) {
+                    String  name = rs.getString("name");
+                    int price = rs.getInt("price");
                     writer.writeProduct(name, price);
                 }
                 writer.endPage();

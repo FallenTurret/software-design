@@ -1,9 +1,12 @@
 package ru.akirakozov.sd.refactoring.servlet;
 
+import ru.akirakozov.sd.refactoring.database.ProductsDatabase;
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -16,29 +19,10 @@ public class QueryServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String command = request.getParameter("command");
+        PrintWriter writer = response.getWriter();
 
         if ("max".equals(command)) {
-            try {
-                try (Connection c = DriverManager.getConnection("jdbc:sqlite:test.db")) {
-                    Statement stmt = c.createStatement();
-                    ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCT ORDER BY PRICE DESC LIMIT 1");
-                    response.getWriter().println("<html><body>");
-                    response.getWriter().println("<h1>Product with max price: </h1>");
-
-                    while (rs.next()) {
-                        String  name = rs.getString("name");
-                        int price  = rs.getInt("price");
-                        response.getWriter().println(name + "\t" + price + "</br>");
-                    }
-                    response.getWriter().println("</body></html>");
-
-                    rs.close();
-                    stmt.close();
-                }
-
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            ProductsDatabase.getMaxProduct(writer);
         } else if ("min".equals(command)) {
             try {
                 try (Connection c = DriverManager.getConnection("jdbc:sqlite:test.db")) {

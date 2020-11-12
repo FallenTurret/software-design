@@ -13,6 +13,10 @@ public class HTMLProductsWriter {
         writer.println(name + "\t" + price + "</br>");
     }
 
+    public void writeHeading(String heading) {
+        writer.println("<h1>" + heading + ": </h1>");
+    }
+
     public void beginPage() {
         writer.println("<html><body>");
     }
