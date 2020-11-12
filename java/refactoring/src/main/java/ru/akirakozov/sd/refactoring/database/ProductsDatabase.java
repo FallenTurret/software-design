@@ -30,22 +30,34 @@ public class ProductsDatabase {
     }
 
     public static void getProducts(PrintWriter printWriter) {
-        getQueryResults(printWriter, "SELECT * FROM PRODUCT", "");
+        getQueryResults(printWriter, false, "SELECT * FROM PRODUCT", "", "");
     }
 
     public static void getMaxProduct(PrintWriter printWriter) {
-        getQueryResults(printWriter,
+        getQueryResults(printWriter, false,
                 "SELECT * FROM PRODUCT ORDER BY PRICE DESC LIMIT 1",
-                "Product with max price");
+                "Product with max price", "");
     }
 
     public static void getMinProduct(PrintWriter printWriter) {
-        getQueryResults(printWriter,
+        getQueryResults(printWriter, false,
                 "SELECT * FROM PRODUCT ORDER BY PRICE LIMIT 1",
-                "Product with min price");
+                "Product with min price", "");
     }
 
-    private static void getQueryResults(PrintWriter printWriter, String sql, String heading) {
+    public static void getSummaryPrice(PrintWriter printWriter) {
+        getQueryResults(printWriter, true,
+                "SELECT SUM(price) FROM PRODUCT",
+                "", "Summary price: ");
+    }
+
+    public static void getCount(PrintWriter printWriter) {
+        getQueryResults(printWriter, true,
+                "SELECT COUNT(*) FROM PRODUCT",
+                "", "Number of products: ");
+    }
+
+    private static void getQueryResults(PrintWriter printWriter, boolean singleNumber, String sql, String heading, String line) {
         try {
             HTMLProductsWriter writer = new HTMLProductsWriter(printWriter);
             try (Connection c = DriverManager.getConnection(URL)) {
@@ -55,11 +67,20 @@ public class ProductsDatabase {
                 if (!"".equals(heading)) {
                     writer.writeHeading(heading);
                 }
+                if (!"".equals(line)) {
+                    writer.writeLine(line);
+                }
 
-                while (rs.next()) {
-                    String  name = rs.getString("name");
-                    int price = rs.getInt("price");
-                    writer.writeProduct(name, price);
+                if (singleNumber) {
+                    if (rs.next()) {
+                        writer.writeLine(String.valueOf(rs.getInt(1)));
+                    }
+                } else {
+                    while (rs.next()) {
+                        String  name = rs.getString("name");
+                        int price = rs.getInt("price");
+                        writer.writeProduct(name, price);
+                    }
                 }
                 writer.endPage();
 

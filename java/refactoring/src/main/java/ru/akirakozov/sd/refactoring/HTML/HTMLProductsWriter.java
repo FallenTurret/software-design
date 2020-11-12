@@ -17,6 +17,10 @@ public class HTMLProductsWriter {
         writer.println("<h1>" + heading + ": </h1>");
     }
 
+    public void writeLine(String line) {
+        writer.println(line);
+    }
+
     public void beginPage() {
         writer.println("<html><body>");
     }
