@@ -30,37 +30,25 @@ public class ProductsDatabase {
     }
 
     public static void getProducts(PrintWriter printWriter) {
-        try {
-            HTMLProductsWriter writer = new HTMLProductsWriter(printWriter);
-            try (Connection c = DriverManager.getConnection(URL)) {
-                Statement stmt = c.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCT");
-                writer.beginPage();
-
-                while (rs.next()) {
-                    String name = rs.getString("name");
-                    int price = rs.getInt("price");
-                    writer.writeProduct(name, price);
-                }
-                writer.endPage();
-
-                rs.close();
-                stmt.close();
-            }
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        getQueryResults(printWriter, "SELECT * FROM PRODUCT", "");
     }
 
     public static void getMaxProduct(PrintWriter printWriter) {
+        getQueryResults(printWriter,
+                "SELECT * FROM PRODUCT ORDER BY PRICE DESC LIMIT 1",
+                "Product with max price");
+    }
+
+    private static void getQueryResults(PrintWriter printWriter, String sql, String heading) {
         try {
             HTMLProductsWriter writer = new HTMLProductsWriter(printWriter);
             try (Connection c = DriverManager.getConnection(URL)) {
                 Statement stmt = c.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCT ORDER BY PRICE DESC LIMIT 1");
+                ResultSet rs = stmt.executeQuery(sql);
                 writer.beginPage();
-                writer.writeHeading("Product with max price");
+                if (!"".equals(heading)) {
+                    writer.writeHeading(heading);
+                }
 
                 while (rs.next()) {
                     String  name = rs.getString("name");
